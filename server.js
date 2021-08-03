@@ -4,6 +4,7 @@ const passport = require('passport');
 const session = require('express-session');
 const path = require('path');
 const userRouter = require('./routes/user');
+const groupRouter = require('./routes/group');
 
 function createServer(){
 	const app = express();
@@ -15,6 +16,7 @@ function createServer(){
 	app.use(bodyParser.urlencoded({ extended: true }));
 	app.use(express.urlencoded({extended: false}));
 	app.use('/user', userRouter);
+	app.use('/group', groupRouter);
 
 	return app;
 };
