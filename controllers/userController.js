@@ -2,6 +2,10 @@ const { body,validationResult } = require('express-validator');
 var User = require('../models/user');
 const bcrypt = require('bcryptjs');
 
+exports.get_user = function (req,res,next) {
+	//console.log("reached");
+	res.json({ name: "frodo" });
+};
 
 exports.create_user = [
 	body('email',"Must be an email address").isEmail().trim().escape().normalizeEmail(),
@@ -49,7 +53,4 @@ exports.create_user = [
 			});
 		}
 	}
-
-
-
 ];

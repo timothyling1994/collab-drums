@@ -1,5 +1,5 @@
 {
-  "name": "facebook-clone",
+  "name": "collab-drums",
   "jest": {
     "testEnvironment": "node"
   },
