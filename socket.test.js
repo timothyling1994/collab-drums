@@ -14,10 +14,16 @@ describe("my awesome project", () => {
     httpServer.listen(() => {
       const port = httpServer.address().port;
       clientSocket = new Client(`http://localhost:${port}`);
+
       io.on("connection", (socket) => {
+        socket.join("room-1");
         serverSocket = socket;
+
       });
-      clientSocket.on("connect", done);
+
+      clientSocket.on("connect", () => {
+        done();
+      });
     });
   });
 
@@ -42,5 +48,15 @@ describe("my awesome project", () => {
       expect(arg).toBe("hola");
       done();
     });
+  });
+  
+  test("joining room", (done) => {
+  
+    clientSocket.on('connectToRoom',(arg)=>{
+      expect(arg).toBe("You are in room-1");
+      done();
+    });
+
+    io.to("room-1").emit('connectToRoom',"You are in room-1");
   });
 });
