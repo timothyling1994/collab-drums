@@ -13,7 +13,7 @@ function createServer(){
 	app.use(passport.session());
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({ extended: true }));
-	app.use(express.urlencoded({extended: false}));
+	app.use(express.urlencoded({extended: true}));
 
 	return app;
 };

@@ -3,9 +3,52 @@ const { body,validationResult } = require('express-validator');
 var Room = require('../models/room');
 
 
-exports.join_room = function (req,res,next) {
+/*exports.join_room = function (req,res,next) {
 
-	Room.find({roomId:req.params.id});
+	Room.find({roomId:req.params.roomId}).exec(function(err,result){
+		if(err){return next(err);}
+		if(result.length===0)
+		{
+			//redirect to home page
+			return res.json({
+				error: "Room does not exist",
+			});
+		}
+		else
+		{
+
+			//redirect to specific room
+			return res.json({
+				success: "Room joined!",
+			});
+		}
+	});
+};*/
+
+exports.join_room = function (io) {
+
+	console.log(io);
+	return function(req,res,next)
+	{
+		Room.find({roomId:req.params.roomId}).exec(function(err,result){
+			if(err){return next(err);}
+			if(result.length===0)
+			{
+				//redirect to home page
+				return res.json({
+					error: "Room does not exist",
+				});
+			}
+			else
+			{
+				io.emit('room-joined',true);
+				//redirect to specific room
+				return res.json({
+					success: "Room joined!",
+				});
+			}
+		});
+	}
 };
 
 exports.test = function(req,res,next){
@@ -36,7 +79,7 @@ exports.create_room = async function (req,res,next) {
 	}
 
 	const room = new Room({
-					email:req.body.email,
+					connections:[{userId: req.body.userId, socketId:req.body.socketId}],
 					roomId:generatedId
 					
 				}).save(err=>{
@@ -44,9 +87,13 @@ exports.create_room = async function (req,res,next) {
 						return next(err);
 					}
 
+					//res.redirect(generatedId);
 					return res.json({
-						email:req.body.email,
+						connections:[{userId: req.body.userId, socketId:req.body.socketId}],
 						roomId:generatedId
 					});
 				});
+
+
+
 };

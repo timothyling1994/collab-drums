@@ -3,7 +3,6 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var RoomSchema = new Schema({
-	//email: {type:String,required:true},
 	connections: {type:[{userId:String, socketId: String}],required:true},
 	roomId: {type:String,required:true},
 });

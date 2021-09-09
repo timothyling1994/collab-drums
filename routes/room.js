@@ -6,7 +6,7 @@ var returnRoomRouter = function(io){
 	
 	router.post('/create-room', roomController.create_room);
 
-	router.get('/:roomId', roomController.join_room);
+	router.get('/:roomId', roomController.join_room(io));
 
 	router.get('/', roomController.test);
 

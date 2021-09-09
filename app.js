@@ -14,7 +14,10 @@ const roomRouter = require('./routes/room')(io);
 app.use('/', roomRouter);
 
 io.on("connection",(socket)=>{
-
+	socket.on('new-user', name => {
+		//users[socket.id] = name;
+		//socket.broadcast.emit('user-connected',name);
+	})
 });	
 
 httpServer.listen(3000,() => console.log('app listening on port 3000'));
