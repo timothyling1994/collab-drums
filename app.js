@@ -14,7 +14,8 @@ const roomRouter = require('./routes/room')(io);
 app.use('/', roomRouter);
 
 io.on("connection",(socket)=>{
-	socket.on('new-user', name => {
+	socket.on('new-user', ([roomName,name]) => {
+		console.log(roomName);
 		//users[socket.id] = name;
 		//socket.broadcast.emit('user-connected',name);
 	})

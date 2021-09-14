@@ -4,7 +4,7 @@ let roomController = require('../controllers/roomController');
 
 var returnRoomRouter = function(io){
 	
-	router.post('/create-room', roomController.create_room);
+	router.post('/create-room', roomController.create_room(io));
 
 	router.get('/:roomId', roomController.join_room(io));
 
