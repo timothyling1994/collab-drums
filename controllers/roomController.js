@@ -41,7 +41,7 @@ exports.join_room = function (io) {
 			}
 			else
 			{
-				io.emit('room-joined',true);
+				io.emit('room-joined',req.params.roomId);
 				//redirect to specific room
 				return res.json({
 					success: "Room joined!",
@@ -53,7 +53,10 @@ exports.join_room = function (io) {
 
 exports.test = function(req,res,next){
 
-	res.send("success");
+	Room.find({}).exec(function(err,list_rooms){
+		if(err){return next(err);}
+		res.render('index',{rooms:list_rooms});
+	});
 }
 
 exports.create_room = async function (req,res,next) {
@@ -85,7 +88,7 @@ exports.create_room = async function (req,res,next) {
 				}).save(err=>{
 					if(err){
 						return next(err);
-					}
+					} 
 
 					//res.redirect(generatedId);
 					return res.json({
