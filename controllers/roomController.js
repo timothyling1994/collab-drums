@@ -27,7 +27,6 @@ var Room = require('../models/room');
 
 exports.join_room = function (io) {
 
-	console.log(io);
 	return function(req,res,next)
 	{
 		Room.find({roomId:req.params.roomId}).exec(function(err,result){
@@ -35,17 +34,18 @@ exports.join_room = function (io) {
 			if(result.length===0)
 			{
 				//redirect to home page
-				return res.json({
-					error: "Room does not exist",
-				});
+				return res.redirect('/');
 			}
 			else
 			{
 				io.emit('room-joined',req.params.roomId);
+
+
+				res.render('room',{roomId:req.params.roomId});
 				//redirect to specific room
-				return res.json({
+				/*return res.json({
 					success: "Room joined!",
-				});
+				});*/
 			}
 		});
 	}
@@ -53,7 +53,7 @@ exports.join_room = function (io) {
 
 exports.test = function(req,res,next){
 
-	Room.find({}).exec(function(err,list_rooms){
+	Room.find({},'roomId').exec(function(err,list_rooms){
 		if(err){return next(err);}
 		res.render('index',{rooms:list_rooms});
 	});
@@ -90,11 +90,11 @@ exports.create_room = async function (req,res,next) {
 						return next(err);
 					} 
 
-					//res.redirect(generatedId);
-					return res.json({
+					return res.redirect("/"+generatedId);
+					/*return res.json({
 						connections:[{userId: req.body.userId, socketId:req.body.socketId}],
 						roomId:generatedId
-					});
+					});*/
 				});
 
 

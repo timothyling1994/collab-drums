@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "NODE_ENV=dev DEBUG=* node app.js"
+    "start": "NODE_ENV=dev node app.js"
   },
   "author": "",
   "license": "ISC",
