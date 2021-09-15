@@ -14,11 +14,20 @@ const roomRouter = require('./routes/room')(io);
 app.use('/', roomRouter);
 
 io.on("connection",(socket)=>{
-	socket.on('new-user', ([roomName,name]) => {
+	socket.on('new-user', (roomName,name) => {
+		socket.join(roomName);
+
 		console.log(roomName);
-		//users[socket.id] = name;
-		//socket.broadcast.emit('user-connected',name);
-	})
+		console.log(name);
+
+		console.log(socket.to(roomName));
+		
+		socket.to(roomName).emit('user-connected',name);
+	});
+
+	socket.on('disconnect',() => {
+		//socket.broadcast.emit('user-disconnected',)
+	});
 });	
 
 httpServer.listen(3000,() => console.log('app listening on port 3000'));

@@ -15,7 +15,6 @@ exports.join_room = function (io) {
 			}
 			else
 			{
-
 				res.render('room',{roomId:req.params.roomId});
 			}
 		});
