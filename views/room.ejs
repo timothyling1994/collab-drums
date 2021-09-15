@@ -11,42 +11,376 @@
   <script defer src="http://localhost:3000/socket.io/socket.io.js"></script>
   <script defer src="script.js"></script>
   <style>
+    @font-face { font-family: 'slaytanic'; src: url('../public/slaytanic/Slaytanic.ttf'); } 
     body {
       padding: 0;
       margin: 0;
       display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100vw;
+      height: 100vh;
+    }
+    #main-container-title{
+      width: 100%;
+      text-align: center;
+      font-family: slaytanic, Arial;
+      font-size: 8em;
+      margin-top: 0.1em;
+      margin-bottom: 0.1em;
+    }
+
+    #drum-grid{
+      display: flex;
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #control-panel{
+      width: 100%;
+      display: flex;
       justify-content: center;
     }
-    #message-container {
-      width: 80%;
-      max-width: 1200px;
+    .control-btn{
+      height: 3em;
+      width: 3em;
+      margin: 0.5em;
     }
-    #message-container div {
-      background-color: #CCC;
-      padding: 5px;
-    }
-    #message-container div:nth-child(2n) {
-      background-color: #FFF;
-    }
-    #send-container {
-      position: fixed;
-      padding-bottom: 30px;
-      bottom: 0;
-      background-color: white;
-      max-width: 1200px;
-      width: 80%;
+    .instrument{
       display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 1em;
     }
-    #message-input {
-      flex-grow: 1;
+    .drum-box{
+      height: 2.5rem;
+      width: 2.5rem;
+      border-left: solid black 2px;
+      border-right: solid black 2px;
+      border-top: solid black 4px;
+      border-bottom: solid black 4px;
+    }
+
+    .drum-box:hover{
+      background-color: grey;
+    }
+    .first{
+      border-left: solid black 4px;
+    }
+    .fourth{
+      margin-right: 0.25em;
+      border-right: solid black 4px;
+    }
+    .last{
+      border-right: solid black 4px;
+    }
+    .add-sample{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 1em;
+      flex-wrap: wrap;
+    }
+    .sample-icon{
+      height: 3em;
+      width: 3em;
+      margin-bottom: 0.5em;
+    }
+    .add-sample:hover{
+      background-color: orange;
+    }
+    .add-sample-descrip{
+      width: 100%;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <div id="message-container"></div>
-  <form id="send-container">
-    <input type="text" id="message-input">
-    <button type="submit" id="send-button">Send</button>
-  </form>
+  <div id="main-container">
+    <div id="main-container-title">Collab Drums</div>
+    <div id="drum-grid">
+      <div id="control-panel">
+        <img class="control-btn" src="play.svg"></img>
+        <img class="control-btn" src="pause.svg"></img>
+        <img></img>
+      </div>
+      <div class="instrument" id="instrument-1">
+        <div class="add-sample">
+          <img class="sample-icon" src= "vinyl.svg"></img>
+          <div class="add-sample-descrip">Add Sample</div>
+        </div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box last"></div>
+      </div>
+      
+      <div class="instrument" id="instrument-2">
+        <div class="add-sample">
+          <img class="sample-icon" src= "vinyl.svg"></img>
+          <div class="add-sample-descrip">Add Sample</div>
+        </div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box last"></div>
+      </div>
+
+      <div class="instrument" id="instrument-3">
+        <div class="add-sample">
+          <img class="sample-icon" src= "vinyl.svg"></img>
+          <div class="add-sample-descrip">Add Sample</div>
+        </div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box last"></div>
+      </div>
+
+      <div class="instrument" id="instrument-4">
+        <div class="add-sample">
+          <img class="sample-icon" src= "vinyl.svg"></img>
+          <div class="add-sample-descrip">Add Sample</div>
+        </div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box last"></div>
+      </div>
+
+      <div class="instrument" id="instrument-5">
+        <div class="add-sample">
+          <img class="sample-icon" src= "vinyl.svg"></img>
+          <div class="add-sample-descrip">Add Sample</div>
+        </div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box last"></div>
+      </div>
+
+      <div class="instrument" id="instrument-6">
+        <div class="add-sample">
+          <img class="sample-icon" src= "vinyl.svg"></img>
+          <div class="add-sample-descrip">Add Sample</div>
+        </div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box last"></div>
+      </div>
+
+      <div class="instrument" id="instrument-7">
+        <div class="add-sample">
+          <img class="sample-icon" src= "vinyl.svg"></img>
+          <div class="add-sample-descrip">Add Sample</div>
+        </div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box fourth"></div>
+        <div class="drum-box first"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box"></div>
+        <div class="drum-box last"></div>
+      </div>
+
+    </div>
+  </div>
 </body>
 </html>
