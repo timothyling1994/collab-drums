@@ -1,3 +1,7 @@
+//import fireBaseApp from "./firebase.js";
+const fireBaseApp = require('./firebase');
+//import express from 'express';
+//import createServer from './server';
 const express = require('express');
 const createServer = require('./server');
 //const userRouter = require('./routes/user');
