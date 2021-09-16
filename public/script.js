@@ -1,3 +1,22 @@
+
+
+const instruments = document.getElementsByClassName("instrument");
+
+for(let i = 0; i<instruments.length;i++)
+{
+  instruments[i].addEventListener("click", loadSample);
+}
+
+function loadSample () {
+  console.log("loaded");
+};
+
+
+
+
+
+
+
 const socket = io('http://localhost:3000')
 const messageContainer = document.getElementById('message-container')
 const roomContainer = document.getElementById('room-container')
