@@ -1,5 +1,5 @@
 //import fireBaseApp from "./firebase.js";
-const fireBaseApp = require('./firebase');
+const { fireBaseApp, fireBaseStorage }  = require('./firebase');
 //import express from 'express';
 //import createServer from './server';
 const express = require('express');
@@ -20,13 +20,12 @@ app.use('/', roomRouter);
 io.on("connection",(socket)=>{
 	socket.on('new-user', (roomName,name) => {
 		socket.join(roomName);
-
-		console.log(roomName);
-		console.log(name);
-
-		console.log(socket.to(roomName));
-		
 		socket.to(roomName).emit('user-connected',name);
+	});
+
+	socket.on('send_audio',(file)=>{
+		console.log("reach?");
+		console.log(file);
 	});
 
 	socket.on('disconnect',() => {

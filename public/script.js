@@ -1,14 +1,30 @@
+const socket = io('http://localhost:3000')
 
+const samples = document.getElementsByClassName("add-sample");
 
-const instruments = document.getElementsByClassName("instrument");
-
-for(let i = 0; i<instruments.length;i++)
+for(let i = 0; i<samples.length;i++)
 {
-  instruments[i].addEventListener("click", loadSample);
+  samples[i].addEventListener("click", (e) => loadSample(e));
 }
 
-function loadSample () {
-  console.log("loaded");
+
+function loadSample (e) {
+  const add_sample_div = e.target.closest(".add-sample");
+  const instrument_div = e.target.closest(".instrument");
+  add_sample_div.style.display="none";
+
+  let fileInput = document.createElement("input");
+  fileInput.setAttribute('type','file');
+  fileInput.setAttribute('accept','.wav, .mp3');
+  fileInput.addEventListener("change", (e)=>{
+    const fileList = e.target.files;
+    console.log(fileList[0]);
+    socket.emit("send_audio",{
+      file: fileList[0]
+    });
+  });
+
+  instrument_div.prepend(fileInput);
 };
 
 
@@ -16,8 +32,6 @@ function loadSample () {
 
 
 
-
-const socket = io('http://localhost:3000')
 const messageContainer = document.getElementById('message-container')
 const roomContainer = document.getElementById('room-container')
 const messageForm = document.getElementById('send-container')
