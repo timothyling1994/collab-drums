@@ -15,6 +15,7 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
+      align-content: flex-start;
       width: 100vw;
       height: 100vh;
     }
@@ -26,18 +27,56 @@
       margin-top: 0.1em;
       margin-bottom: 0.1em;
     }
+
+    #join-public-room button:hover {
+      background-color: grey;
+   }
+
+    #create-public-room{
+      width: 100%;
+      text-align: center;
+
+    }
+
+   #create-public-room button:hover {
+      background-color: grey;
+   }
+
+   #create-private-room{
+      width: 100%;
+      text-align: center;
+    }
+
+   #create-private-room button:hover {
+      background-color: grey;
+   }
+
+   .main-btn {
+      width: 15em;
+      background-color: white;
+      padding: 1em;
+      font-size: 1em;
+      margin: 1em;
+   }
+
    </style>
 </head>
 <body>
    <div id="main-container-title">Collab Drums</div>
-   <div id="room-container">
-    <% rooms.forEach(room => { %>
-      <div><%= room.roomId %></div>
-      <a href="/<%= room.roomId %>">Join</a>
-    <% }) %>
+   <div id="join-public-room">
+      <form action="/join-public-room" method="GET">
+       <button class="main-btn" type="submit">Join Public Room</button>
+      </form>
    </div>
-   <form action="/create-room" method="POST">
-    <button type="submit">New Room</button>
-   </form>
+   <div id="create-public-room">
+      <form action="/create-public-room" method="POST">
+       <button class="main-btn" type="submit">Create Public Room</button>
+      </form>
+   </div>
+   <div id="create-private-room">
+      <form action="/create-private-room" method="POST">
+       <button class="main-btn" type="submit">Create Private Room</button>
+      </form>
+   </div>
 </body>
 </html>

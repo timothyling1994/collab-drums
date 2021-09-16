@@ -21,15 +21,20 @@ exports.join_room = function (io) {
 	}
 };
 
-exports.test = function(req,res,next){
+exports.display_public_rooms = function(req,res,next){
 
-	Room.find({},'roomId').exec(function(err,list_rooms){
+	Room.find({'isPublic':true},'roomId').exec(function(err,list_rooms){
 		if(err){return next(err);}
-		res.render('index',{rooms:list_rooms});
+		res.render('public_rooms_list',{rooms:list_rooms});
 	});
 }
 
-exports.create_room = function (io) {
+exports.display_home = function(req,res,next){
+
+	res.render('index');
+}
+
+exports.create_room = function (io, isPublic) {
 	const _io = io;
 
 	return async function(req,res,next)
@@ -56,7 +61,8 @@ exports.create_room = function (io) {
 
 		const room = new Room({
 						connections:[{userId: req.body.userId, socketId:req.body.socketId}],
-						roomId:generatedId
+						roomId:generatedId,
+						isPublic:isPublic
 						
 					}).save(err=>{
 						if(err){

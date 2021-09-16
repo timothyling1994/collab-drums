@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   <title>Chat App</title>
+   <script defer src="http://localhost:3000/socket.io/socket.io.js"></script>
+   <script defer src="script.js"></script>
+   <style>
+    @font-face { font-family: 'slaytanic'; src: url('../public/slaytanic/Slaytanic.ttf'); } 
+    body {
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-content: flex-start;
+      width: 100vw;
+      height: 100vh;
+    }
+    #main-container-title{
+      width: 100%;
+      text-align: center;
+      font-family: slaytanic, Arial;
+      font-size: 8em;
+      margin-top: 0.1em;
+      margin-bottom: 0.1em;
+    }
+   </style>
+</head>
+<body>
+   <div id="main-container-title">Collab Drums</div>
+   <div id="public-room-container">
+    <% rooms.forEach(room => { %>
+      <div><%= room.roomId %></div>
+      <a href="/<%= room.roomId %>">Join</a>
+    <% }) %>
+   </div>
+</body>
+</html>
