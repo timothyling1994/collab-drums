@@ -20,7 +20,9 @@ function loadSample (e) {
     const fileList = e.target.files;
     console.log(fileList[0]);
     socket.emit("send_audio",{
-      file: fileList[0]
+      file: fileList[0],
+      roomName,
+      instrumentNum: instrument_div.id,
     });
   });
 

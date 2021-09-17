@@ -1,8 +1,5 @@
-//import { initializeApp } from "firebase/app";
-
 const app = require('firebase/app');
-const appStorage = require('firebase/storage');
-//import { getStorage } from "firebase/storage";
+const fireBaseStorage = require('firebase/storage');
 require('dotenv').config();
 
 const firebaseConfig = {
@@ -16,12 +13,11 @@ const firebaseConfig = {
 };
 
 const fireBaseApp = app.initializeApp(firebaseConfig);
-const fireBaseStorage = appStorage.getStorage(fireBaseApp);
 
 console.log("firebase initialized");
 
 //export default fireBaseApp;
 module.exports = {
   fireBaseApp,
-  fireBaseStorage,
+  fireBaseStorage
 };
