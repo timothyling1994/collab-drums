@@ -12,19 +12,39 @@ require("./mongoConfig");
 
 const app = createServer();
 const httpServer = require("http").createServer(app);
-var io = require("socket.io")(httpServer);
+var io = require("socket.io")(httpServer,{
+    cors: {
+        origin: "http://localhost:4200",
+        methods: ["GET", "POST"]
+    }
+});
 const roomRouter = require('./routes/room')(io);
 
 const storage = fireBaseStorage.getStorage(fireBaseApp);
 
-
-
 //app.use('/user', userRouter);
 app.use('/', roomRouter);
 
-io.on("connection",(socket)=>{
-	socket.on('new-user', (roomName,name) => {
-		socket.join(roomName);
+io.on("connection",(socket) => {
+	
+	socket.on('new-user', (room, name) => {
+	    socket.join(room)
+	    socket.to(room).emit('user-connected', name)
+	  })
+
+	socket.on('joining-room',(roomName,name) => {
+
+		socket.join(roomName)
+		console.log(name+" joining:"+roomName);
+
+		/*
+		async function getSockets () {
+			const sockets = await io.in(roomName).fetchSockets();
+			console.log(sockets.length);
+		};
+
+		getSockets();*/
+
 		socket.to(roomName).emit('user-connected',name);
 	});
 
@@ -32,7 +52,8 @@ io.on("connection",(socket)=>{
 		console.log(data);
 
 		const metadata = {
-			instrumentNum: data.instrumentNum
+			instrumentNum: data.instrumentNum,
+			contentType: 'audio/mp3',
 		}
 		const storageRef = fireBaseStorage.ref(storage,data.roomName+"/"+data.instrumentNum);
 		/*fireBaseStorage.uploadBytes(storageRef,data.file).then((snapshot)=>{
@@ -77,6 +98,8 @@ io.on("connection",(socket)=>{
 		    // Upload completed successfully, now we can get the download URL
 		    fireBaseStorage.getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
 		      console.log('File available at', downloadURL);
+		      console.log(data.roomName);
+		      socket.to(data.roomName).emit('audio_url',downloadURL,data.instrumentNum);
 		    });
 		  }
 		);

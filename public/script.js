@@ -1,12 +1,26 @@
 const socket = io('http://localhost:3000')
 
 const samples = document.getElementsByClassName("add-sample");
+//const joinBtns = document.getElementsByClassName('join-room-btn');
+
+
+/*for(let i = 0; i<joinBtns.length;i++)
+{
+  joinBtns[i].addEventListener("click", (e) => redirectToRoom(e));
+}*/
+
 
 for(let i = 0; i<samples.length;i++)
 {
   samples[i].addEventListener("click", (e) => loadSample(e));
 }
 
+/*function redirectToRoom(e){
+
+  socket.emit('joining-room',e.target.id);
+  let domain = location.host;
+  window.location.replace(window.location.protocol + "//" + domain+e.target.id);
+};*/
 
 function loadSample (e) {
   const add_sample_div = e.target.closest(".add-sample");
@@ -29,9 +43,26 @@ function loadSample (e) {
   instrument_div.prepend(fileInput);
 };
 
+socket.on('user-connected', name => {
+  console.log('user connected:'+name);
+})
 
 
+socket.on('audio_url', (downloadURL,instrumentNum) => {
+  console.log('REACHY');
+  console.log(downloadURL);
+  console.log(instrumentNum);
+  const audioDiv = document.createElement("audio");
+  audioDiv.setAttributes("src",downloadURL);
+});
 
+
+const joinPublicBtn = document.getElementById('join-public-btn');
+
+/*
+joinPublicBtn.addEventListener('click',function(){
+  socket.emit('joining-room');
+});*/
 
 
 const messageContainer = document.getElementById('message-container')
@@ -42,7 +73,7 @@ const messageInput = document.getElementById('message-input')
 if (messageForm != null) {
   const name = prompt('What is your name?')
   appendMessage('You joined')
-  socket.emit('new-user', roomName, name)
+  socket.emit('joining-room', roomName, name)
 
   messageForm.addEventListener('submit', e => {
     e.preventDefault()

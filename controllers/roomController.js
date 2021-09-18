@@ -4,9 +4,11 @@ var Room = require('../models/room');
 
 
 exports.join_room = function (io) {
+	const _io = io;
 
 	return function(req,res,next)
 	{
+
 		Room.find({roomId:req.params.roomId}).exec(function(err,result){
 			if(err){return next(err);}
 			if(result.length===0)
