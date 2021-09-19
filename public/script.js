@@ -32,11 +32,11 @@ function loadSample (e) {
   fileInput.setAttribute('accept','.wav, .mp3');
   fileInput.addEventListener("change", (e)=>{
     const fileList = e.target.files;
-    console.log(fileList[0]);
     socket.emit("send_audio",{
       file: fileList[0],
       roomName,
       instrumentNum: instrument_div.id,
+      fileName:fileList[0].name,
     });
   });
 
@@ -48,12 +48,17 @@ socket.on('user-connected', name => {
 })
 
 
-socket.on('audio_url', (downloadURL,instrumentNum) => {
-  console.log('REACHY');
-  console.log(downloadURL);
-  console.log(instrumentNum);
+socket.on('audio_url', (fileName, downloadURL,instrumentNum) => {
+  appendMessage(`${downloadURL} connected`)
   const audioDiv = document.createElement("audio");
-  audioDiv.setAttributes("src",downloadURL);
+  audioDiv.setAttribute("src",downloadURL);
+  const instrumentDiv = document.getElementById(instrumentNum);
+  if(instrumentDiv !== null)
+  {
+    instrumentDiv.querySelector('.add-sample').querySelector('.add-sample-descrip').innerText = fileName;
+    instrumentDiv.prepend(audioDiv);
+    audioDiv.play();
+  }
 });
 
 

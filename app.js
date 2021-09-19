@@ -98,8 +98,8 @@ io.on("connection",(socket) => {
 		    // Upload completed successfully, now we can get the download URL
 		    fireBaseStorage.getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
 		      console.log('File available at', downloadURL);
-		      console.log(data.roomName);
-		      socket.to(data.roomName).emit('audio_url',downloadURL,data.instrumentNum);
+		      console.log(data.instrumentNum);
+		      socket.to(data.roomName).emit('audio_url',data.fileName,downloadURL,data.instrumentNum);
 		    });
 		  }
 		);
