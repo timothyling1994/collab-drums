@@ -99,7 +99,8 @@ io.on("connection",(socket) => {
 		    fireBaseStorage.getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
 		      console.log('File available at', downloadURL);
 		      console.log(data.instrumentNum);
-		      socket.to(data.roomName).emit('audio_url',data.fileName,downloadURL,data.instrumentNum);
+		      io.to(data.roomName).emit('audio_url',data.fileName,downloadURL,data.instrumentNum);
+		      //socket.emit('upload-complete', data.fileName, downloadURL,data.instrumentNum);
 		    });
 		  }
 		);

@@ -1,26 +1,42 @@
 const socket = io('http://localhost:3000')
 
+let trackData = {
+  current_step: 0,
+
+  tracks:[],
+};
+
+setInterval(function(){
+  clearHighlight();
+  trackData.current_step += 1; 
+  highlightBoxes();
+  console.log("1");
+}
+,1000);
+
+function clearHighlight () {
+  const divsToRemoveHighlight = document.getElementsByClassName('highlighted');
+
+  for(let i = 0; i<divsToRemoveHighlight;i++)
+  {
+    divsToRemoveHighlight[i].classList.remove('highlighted');
+  }
+}
+
+function highlightBoxes () {
+  const divsToHighlight = document.getElementsByClassName('step-'+trackData.current_step);
+  for(let i = 0; i<divsToHighlight;i++)
+  {
+    divsToHighlight[i].classList.add('highlighted');
+  }
+};  
+
 const samples = document.getElementsByClassName("add-sample");
-//const joinBtns = document.getElementsByClassName('join-room-btn');
-
-
-/*for(let i = 0; i<joinBtns.length;i++)
-{
-  joinBtns[i].addEventListener("click", (e) => redirectToRoom(e));
-}*/
-
 
 for(let i = 0; i<samples.length;i++)
 {
   samples[i].addEventListener("click", (e) => loadSample(e));
 }
-
-/*function redirectToRoom(e){
-
-  socket.emit('joining-room',e.target.id);
-  let domain = location.host;
-  window.location.replace(window.location.protocol + "//" + domain+e.target.id);
-};*/
 
 function loadSample (e) {
   const add_sample_div = e.target.closest(".add-sample");
@@ -47,9 +63,18 @@ socket.on('user-connected', name => {
   console.log('user connected:'+name);
 })
 
+socket.on('upload-complete', (fileName,downloadURL,instrumentNum) =>{
+  /*console.log(instrumentNum);
+  const instrumentDiv = document.getElementById(instrumentNum);
+  if(instrumentDiv.querySelector('input'))
+  {
+    instrumentDiv.querySelector('input').remove();
+  }
+  instrumentDiv.querySelector('.add-sample').style.display="flex";*/
+});
 
 socket.on('audio_url', (fileName, downloadURL,instrumentNum) => {
-  appendMessage(`${downloadURL} connected`)
+  appendMessage(`${fileName} uploaded`)
   const audioDiv = document.createElement("audio");
   audioDiv.setAttribute("src",downloadURL);
   const instrumentDiv = document.getElementById(instrumentNum);
@@ -59,15 +84,13 @@ socket.on('audio_url', (fileName, downloadURL,instrumentNum) => {
     instrumentDiv.prepend(audioDiv);
     audioDiv.play();
   }
+
+  if(instrumentDiv.querySelector('input'))
+  {
+    instrumentDiv.querySelector('input').remove();
+  }
+  instrumentDiv.querySelector('.add-sample').style.display="flex";
 });
-
-
-const joinPublicBtn = document.getElementById('join-public-btn');
-
-/*
-joinPublicBtn.addEventListener('click',function(){
-  socket.emit('joining-room');
-});*/
 
 
 const messageContainer = document.getElementById('message-container')
