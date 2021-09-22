@@ -51,6 +51,11 @@
     .control-btn:hover{
 
     }
+    #bpm{
+      width: 3em;
+      text-align: center;
+      font-size: 1.5rem;
+    }
     .instrument{
       display: flex;
       justify-content: center;
@@ -101,7 +106,11 @@
     }
 
     .highlighted{
-      border: solid pink 4px;
+      border: solid #ff9300 4px;
+    }
+
+    .clicked{
+      background-color: #00b341;
     }
   </style>
 </head>
@@ -119,6 +128,7 @@
         <img class="control-btn" src="play.svg"></img>
         <img class="control-btn" src="pause.svg"></img>
         <img class="control-btn" src="trash.svg"></img>
+        <input type="number" id="bpm" value="120">
       </div>
       <div class="instrument" id="instrument-1">
         <div class="add-sample">

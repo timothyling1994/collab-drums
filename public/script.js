@@ -1,31 +1,92 @@
 const socket = io('http://localhost:3000')
 
 let trackData = {
-  current_step: 0,
+  current_step: 1,
 
-  tracks:[],
+  bpm: 120,
+
+  tracks:[]
 };
 
-setInterval(function(){
+trackData.tracks = new Array(7).fill(new Array(32).fill(false));
+
+function loop () {
   clearHighlight();
-  trackData.current_step += 1; 
   highlightBoxes();
-  console.log("1");
+
+  if(trackData.current_step + 1 === 33)
+  {
+    trackData.current_step = 1; 
+  }
+  else
+  {
+    trackData.current_step += 1;
+  }
+  window.setTimeout(loop,(60/trackData.bpm)*1000);
+};
+
+loop();
+
+
+let bpm_div = document.querySelector('#bpm');
+bpm_div.addEventListener('change',function(){
+  trackData.bpm = bpm_div.value;
+});
+
+
+let grid_boxes = document.getElementsByClassName('drum-box');
+
+for(let i=0;i<grid_boxes.length;i++)
+{
+  grid_boxes[i].addEventListener('click',(e)=>{
+    if(e.target.classList.contains("clicked"))
+    {
+      e.target.classList.remove("clicked");
+      for(let i = 0; i<e.target.classList.length;i++)
+      {
+        if(e.target.classList[i].includes('step'))
+        {
+          let searchStep = e.target.classList[i].indexOf('-');
+          let stepIndex = e.target.classList[i].substring(searchStep+1);
+          let searchInstrument = e.target.closest('.instrument').id.indexOf('-');
+          let instrumentIndex = e.target.closest('.instrument').id.substring(searchInstrument+1);
+          
+          trackData.tracks[instrumentIndex-1][stepIndex-1] = false;
+        }
+      }
+    }
+    else
+    {
+      e.target.classList.add("clicked");
+      for(let i = 0; i<e.target.classList.length;i++)
+      {
+        if(e.target.classList[i].includes('step'))
+        {
+          let searchStep = e.target.classList[i].indexOf('-');
+          let stepIndex = e.target.classList[i].substring(searchStep+1);
+          let searchInstrument = e.target.closest('.instrument').id.indexOf('-');
+          let instrumentIndex = e.target.closest('.instrument').id.substring(searchInstrument+1);
+          
+          trackData.tracks[instrumentIndex-1][stepIndex-1] = true;
+        }
+      }
+    }
+  })
 }
-,1000);
 
 function clearHighlight () {
   const divsToRemoveHighlight = document.getElementsByClassName('highlighted');
 
-  for(let i = 0; i<divsToRemoveHighlight;i++)
+  while(divsToRemoveHighlight.length)
   {
-    divsToRemoveHighlight[i].classList.remove('highlighted');
+    divsToRemoveHighlight[0].classList.remove('highlighted');
   }
 }
 
 function highlightBoxes () {
   const divsToHighlight = document.getElementsByClassName('step-'+trackData.current_step);
-  for(let i = 0; i<divsToHighlight;i++)
+  
+  for(let i=0;i<divsToHighlight.length;i++)
   {
     divsToHighlight[i].classList.add('highlighted');
   }
