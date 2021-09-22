@@ -46,10 +46,8 @@ function playSounds () {
   for(let i = 0; i<trackData.tracks.length;i++)
   {
     //(trackData.tracks[i].stepArray[trackData.current_step-1] === true)
-    console.log(trackData.tracks[i]);
     if(trackData.tracks[i].audio !== null && (trackData.tracks[i].stepArray[trackData.current_step-1] === true))
     {
-      console.log("should play");
       trackData.tracks[i].audio.play();
     }
   }
@@ -139,6 +137,7 @@ function addSample (e) {
 
   let fileInput = document.createElement("input");
   fileInput.setAttribute('type','file');
+  fileInput.setAttribute('class','file-input');
   fileInput.setAttribute('accept','.wav, .mp3');
   fileInput.addEventListener("change", (e)=>{
     const fileList = e.target.files;
@@ -213,6 +212,17 @@ socket.on('room-created', room => {
   roomContainer.append(roomElement)
   roomContainer.append(roomLink)
 })
+
+socket.on('get-room-settings', socketId => {
+  socket.emit('sending-room-settings',trackData.bpm,trackData.current_step,socketId);
+});
+
+socket.on('set-room-settings', (bpm, current_step) => {
+  console.log(bpm);
+  console.log(current_step);
+  trackData.bpm = bpm;
+  trackData.current_step = current_step;
+});
 
 socket.on('chat-message', data => {
   appendMessage(`${data.name}: ${data.message}`)

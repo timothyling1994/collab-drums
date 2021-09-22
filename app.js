@@ -27,25 +27,38 @@ app.use('/', roomRouter);
 
 io.on("connection",(socket) => {
 	
-	socket.on('new-user', (room, name) => {
+	/*socket.on('new-user', (room, name) => {
 	    socket.join(room)
 	    socket.to(room).emit('user-connected', name)
-	  })
+	  })*/
 
-	socket.on('joining-room',(roomName,name) => {
+	socket.on('joining-room',async (roomName,name) => {
+
+		const socketsInRoom = await io.in(roomName).fetchSockets();
+
+		/*async function getSockets () {
+			const sockets = await io.in(roomName).fetchSockets();
+			return sockets;
+		};*/
+
+		//const socketsInRoom = getSockets();
+
+		console.log(socketsInRoom);
+		if(socketsInRoom.length > 0)
+		{
+			console.log("getting room settings");
+			console.log(socketsInRoom[0].id);
+			io.to(socketsInRoom[0].id).emit('get-room-settings',socket.id);
+		}
 
 		socket.join(roomName)
 		console.log(name+" joining:"+roomName);
 
-		/*
-		async function getSockets () {
-			const sockets = await io.in(roomName).fetchSockets();
-			console.log(sockets.length);
-		};
-
-		getSockets();*/
-
 		socket.to(roomName).emit('user-connected',name);
+	});
+
+	socket.on('sending-room-settings', (bpm, current_step, socketId) => {
+		io.to(socketId).emit('set-room-settings',bpm,current_step);
 	});
 
 	socket.on('send_audio',(data)=>{
