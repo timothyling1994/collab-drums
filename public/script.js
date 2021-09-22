@@ -5,14 +5,27 @@ let trackData = {
 
   bpm: 120,
 
-  tracks:[]
+  tracks:[createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack()],
 };
 
-trackData.tracks = new Array(7).fill(new Array(32).fill(false));
+
+function createTrack () {
+
+  let stepArray = new Array(32).fill(false);
+
+  return {
+
+    stepArray,
+    audioURL: "",
+    audio: null,
+  };
+
+};
 
 function loop () {
   clearHighlight();
   highlightBoxes();
+  playSounds();
 
   if(trackData.current_step + 1 === 33)
   {
@@ -27,6 +40,26 @@ function loop () {
 
 loop();
 
+
+function playSounds () {
+
+  for(let i = 0; i<trackData.tracks.length;i++)
+  {
+    //(trackData.tracks[i].stepArray[trackData.current_step-1] === true)
+    console.log(trackData.tracks[i]);
+    if(trackData.tracks[i].audio !== null && (trackData.tracks[i].stepArray[trackData.current_step-1] === true))
+    {
+      console.log("should play");
+      trackData.tracks[i].audio.play();
+    }
+  }
+};
+
+document.addEventListener('keyup', event => {
+  if (event.code === 'Space') {
+    trackData.current_step=1;
+  }
+})
 
 let bpm_div = document.querySelector('#bpm');
 bpm_div.addEventListener('change',function(){
@@ -51,7 +84,7 @@ for(let i=0;i<grid_boxes.length;i++)
           let searchInstrument = e.target.closest('.instrument').id.indexOf('-');
           let instrumentIndex = e.target.closest('.instrument').id.substring(searchInstrument+1);
           
-          trackData.tracks[instrumentIndex-1][stepIndex-1] = false;
+          trackData.tracks[instrumentIndex-1].stepArray[stepIndex-1] = false;
         }
       }
     }
@@ -67,7 +100,7 @@ for(let i=0;i<grid_boxes.length;i++)
           let searchInstrument = e.target.closest('.instrument').id.indexOf('-');
           let instrumentIndex = e.target.closest('.instrument').id.substring(searchInstrument+1);
           
-          trackData.tracks[instrumentIndex-1][stepIndex-1] = true;
+          trackData.tracks[instrumentIndex-1].stepArray[stepIndex-1] = true;
         }
       }
     }
@@ -96,10 +129,10 @@ const samples = document.getElementsByClassName("add-sample");
 
 for(let i = 0; i<samples.length;i++)
 {
-  samples[i].addEventListener("click", (e) => loadSample(e));
+  samples[i].addEventListener("click", (e) => addSample(e));
 }
 
-function loadSample (e) {
+function addSample (e) {
   const add_sample_div = e.target.closest(".add-sample");
   const instrument_div = e.target.closest(".instrument");
   add_sample_div.style.display="none";
@@ -122,17 +155,8 @@ function loadSample (e) {
 
 socket.on('user-connected', name => {
   console.log('user connected:'+name);
-})
-
-socket.on('upload-complete', (fileName,downloadURL,instrumentNum) =>{
-  /*console.log(instrumentNum);
-  const instrumentDiv = document.getElementById(instrumentNum);
-  if(instrumentDiv.querySelector('input'))
-  {
-    instrumentDiv.querySelector('input').remove();
-  }
-  instrumentDiv.querySelector('.add-sample').style.display="flex";*/
 });
+
 
 socket.on('audio_url', (fileName, downloadURL,instrumentNum) => {
   appendMessage(`${fileName} uploaded`)
@@ -143,7 +167,14 @@ socket.on('audio_url', (fileName, downloadURL,instrumentNum) => {
   {
     instrumentDiv.querySelector('.add-sample').querySelector('.add-sample-descrip').innerText = fileName;
     instrumentDiv.prepend(audioDiv);
-    audioDiv.play();
+    //audioDiv.play();
+    let searchInstrument = instrumentNum.indexOf('-');
+    let instrumentIndex = instrumentNum.substring(searchInstrument+1);
+    trackData.tracks[instrumentIndex-1].audioURL = downloadURL;
+    trackData.tracks[instrumentIndex-1].audio = new Audio(downloadURL);
+    //console.log(trackData.tracks[instrumentIndex-1].audioURL);
+    //trackData.tracks[instrumentIndex-1].playSound();
+
   }
 
   if(instrumentDiv.querySelector('input'))
