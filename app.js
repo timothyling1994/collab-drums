@@ -27,28 +27,13 @@ app.use('/', roomRouter);
 
 io.on("connection",(socket) => {
 	
-	/*socket.on('new-user', (room, name) => {
-	    socket.join(room)
-	    socket.to(room).emit('user-connected', name)
-	  })*/
-
 	socket.on('joining-room',async (roomName,name) => {
 
 		const socketsInRoom = await io.in(roomName).fetchSockets();
 
-		/*async function getSockets () {
-			const sockets = await io.in(roomName).fetchSockets();
-			return sockets;
-		};*/
-
-		//const socketsInRoom = getSockets();
-
-		console.log(socketsInRoom);
 		if(socketsInRoom.length > 0)
 		{
-			console.log("getting room settings");
-			console.log(socketsInRoom[0].id);
-			io.to(socketsInRoom[0].id).emit('get-room-settings',socket.id);
+			io.to(socketsInRoom[0].id).emit('get-room-settings',socket.id, roomName);
 		}
 
 		socket.join(roomName)
@@ -57,8 +42,34 @@ io.on("connection",(socket) => {
 		socket.to(roomName).emit('user-connected',name);
 	});
 
-	socket.on('sending-room-settings', (bpm, current_step, socketId) => {
-		io.to(socketId).emit('set-room-settings',bpm,current_step);
+	socket.on('sending-room-settings', async (trackData, socketId, roomName) => {
+		//get downloadURLs of existing audio files from firestore
+
+		let newTrackData = {...trackData};
+		const listRef = fireBaseStorage.ref(storage, roomName);
+		const finished = await fireBaseStorage.listAll(listRef)
+			.then((res)=>{
+				console.log("reaches second");
+				res.items.forEach( async (itemRef) => {
+					await fireBaseStorage.getDownloadURL(fireBaseStorage.ref(storage,itemRef))
+					.then((url)=>{
+						let index = itemRef.name.indexOf('-');
+						let instrumentIndex = parseInt(itemRef.name.substring(index+1));
+						newTrackData.tracks[instrumentIndex].audioURL = url;
+						console.log(newTrackData.tracks[instrumentIndex].audioURL);
+		
+					})
+					.catch((error)=>{
+						console.log(error);
+				
+					});
+				})
+			}).catch((error)=>{
+				console.log(error);
+		});
+
+		console.log("reaches first");
+		io.to(socketId).emit('set-room-settings',newTrackData);
 	});
 
 	socket.on('send_audio',(data)=>{
@@ -69,9 +80,6 @@ io.on("connection",(socket) => {
 			contentType: 'audio/mp3',
 		}
 		const storageRef = fireBaseStorage.ref(storage,data.roomName+"/"+data.instrumentNum);
-		/*fireBaseStorage.uploadBytes(storageRef,data.file).then((snapshot)=>{
-			console.log('Uploaded a blob or file!');
-		});*/
 
 		const uploadTask = fireBaseStorage.uploadBytesResumable(storageRef,data.file, metadata);
 

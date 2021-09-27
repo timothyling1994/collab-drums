@@ -61,7 +61,7 @@ document.addEventListener('keyup', event => {
 
 let bpm_div = document.querySelector('#bpm');
 bpm_div.addEventListener('change',function(){
-  trackData.bpm = bpm_div.value;
+  trackData.bpm = parseInt(bpm_div.value);
 });
 
 
@@ -92,7 +92,7 @@ for(let i=0;i<grid_boxes.length;i++)
       for(let i = 0; i<e.target.classList.length;i++)
       {
         if(e.target.classList[i].includes('step'))
-        {
+        {        
           let searchStep = e.target.classList[i].indexOf('-');
           let stepIndex = e.target.classList[i].substring(searchStep+1);
           let searchInstrument = e.target.closest('.instrument').id.indexOf('-');
@@ -213,15 +213,20 @@ socket.on('room-created', room => {
   roomContainer.append(roomLink)
 })
 
-socket.on('get-room-settings', socketId => {
-  socket.emit('sending-room-settings',trackData.bpm,trackData.current_step,socketId);
+socket.on('get-room-settings', (socketId,roomName) => {
+  socket.emit('sending-room-settings',trackData, socketId, roomName);
 });
 
-socket.on('set-room-settings', (bpm, current_step) => {
-  console.log(bpm);
-  console.log(current_step);
-  trackData.bpm = bpm;
-  trackData.current_step = current_step;
+socket.on('set-room-settings', (newtrackData) => {
+
+
+  let bpmDiv = document.querySelector('#bpm');
+  bpmDiv.value = newtrackData.bpm;
+  console.log(trackData);
+  trackData = {
+    ...newtrackData
+  };
+  console.log(trackData);
 });
 
 socket.on('chat-message', data => {
