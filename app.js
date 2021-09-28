@@ -48,27 +48,23 @@ io.on("connection",(socket) => {
 		let newTrackData = {...trackData};
 		const listRef = fireBaseStorage.ref(storage, roomName);
 		const finished = await fireBaseStorage.listAll(listRef)
-			.then((res)=>{
-				console.log("reaches second");
-				res.items.forEach( async (itemRef) => {
+			.then(async (res)=>{
+
+				let results = await Promise.all(res.items.map(async (itemRef)=>{
 					await fireBaseStorage.getDownloadURL(fireBaseStorage.ref(storage,itemRef))
 					.then((url)=>{
 						let index = itemRef.name.indexOf('-');
 						let instrumentIndex = parseInt(itemRef.name.substring(index+1));
-						newTrackData.tracks[instrumentIndex].audioURL = url;
-						console.log(newTrackData.tracks[instrumentIndex].audioURL);
-		
+						newTrackData.tracks[instrumentIndex-1].audioURL = url;
+						return url;
 					})
 					.catch((error)=>{
 						console.log(error);
-				
 					});
-				})
+				}));
 			}).catch((error)=>{
 				console.log(error);
 		});
-
-		console.log("reaches first");
 		io.to(socketId).emit('set-room-settings',newTrackData);
 	});
 
