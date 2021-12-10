@@ -29,20 +29,66 @@ io.on("connection",(socket) => {
 	
 	socket.on('joining-room',async (roomName,name) => {
 
-		const socketsInRoom = await io.in(roomName).fetchSockets();
+		/*const socketsInRoom = await io.in(roomName).fetchSockets();
 
+		console.log("# of sockets:"+socketsInRoom.length);
 		if(socketsInRoom.length > 0)
 		{
 			io.to(socketsInRoom[0].id).emit('get-room-settings',socket.id, roomName);
-		}
+		}*/
 
-		socket.join(roomName)
+		socket.join(roomName);
+		send_room_settings(socket.id,roomName);
+
 		console.log(name+" joining:"+roomName);
-
 		socket.to(roomName).emit('user-connected',name);
 	});
 
-	socket.on('sending-room-settings', async (trackData, socketId, roomName) => {
+	let send_room_settings = async (socketId, roomName) => {
+
+		let newTrackData = {
+			current_step: 1,
+			bpm: 120,
+			tracks:[createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack()],
+		};
+
+		function createTrack () {
+
+		  let stepArray = new Array(32).fill(false);
+
+		  return {
+
+		    stepArray,
+		    audioURL: "",
+		    audio: null,
+		  };
+
+		};
+
+		const listRef = fireBaseStorage.ref(storage, roomName);
+		const finished = await fireBaseStorage.listAll(listRef)
+			.then(async (res)=>{
+
+				let results = await Promise.all(res.items.map(async (itemRef)=>{
+					await fireBaseStorage.getDownloadURL(fireBaseStorage.ref(storage,itemRef))
+					.then((url)=>{
+						let index = itemRef.name.indexOf('-');
+						let instrumentIndex = parseInt(itemRef.name.substring(index+1));
+						newTrackData.tracks[instrumentIndex-1].audioURL = url;
+						return url;
+					})
+					.catch((error)=>{
+						console.log(error);
+					});
+				}));
+			}).catch((error)=>{
+				console.log(error);
+		});
+
+		io.to(socketId).emit('set-room-settings',newTrackData);
+	};
+
+	/*socket.on('sending-room-settings', async (trackData, socketId, roomName) => {
 		//get downloadURLs of existing audio files from firestore
 
 		let newTrackData = {...trackData};
@@ -66,7 +112,7 @@ io.on("connection",(socket) => {
 				console.log(error);
 		});
 		io.to(socketId).emit('set-room-settings',newTrackData);
-	});
+	});*/
 
 	socket.on('send_audio',(data)=>{
 		console.log(data);

@@ -213,20 +213,18 @@ socket.on('room-created', room => {
   roomContainer.append(roomLink)
 })
 
-socket.on('get-room-settings', (socketId,roomName) => {
+/*socket.on('get-room-settings', (socketId,roomName) => {
   socket.emit('sending-room-settings',trackData, socketId, roomName);
-});
+});*/
 
 socket.on('set-room-settings', (newtrackData) => {
 
-
   let bpmDiv = document.querySelector('#bpm');
   bpmDiv.value = newtrackData.bpm;
-  console.log(trackData);
+
   trackData = {
     ...newtrackData
   };
-  console.log(trackData);
 });
 
 socket.on('chat-message', data => {
