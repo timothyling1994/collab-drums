@@ -17,7 +17,10 @@ exports.join_room = function (io) {
 			}
 			else
 			{
-				res.render('room',{roomId:req.params.roomId});
+				//res.render('room',{roomId:req.params.roomId});
+				res.json({
+					roomId:req.params.roomId
+				});
 			}
 		});
 	}
@@ -27,7 +30,10 @@ exports.display_public_rooms = function(req,res,next){
 
 	Room.find({'isPublic':true},'roomId').exec(function(err,list_rooms){
 		if(err){return next(err);}
-		res.render('public_rooms_list',{rooms:list_rooms});
+		res.json({
+			rooms:list_rooms
+		});
+		//res.render('public_rooms_list',{rooms:list_rooms});
 	});
 }
 
