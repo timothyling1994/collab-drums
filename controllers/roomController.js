@@ -1,6 +1,7 @@
 var uniqid = require('uniqid');
 const { body,validationResult } = require('express-validator');
 var Room = require('../models/room');
+var RoomData = require('../models/roomData');
 
 
 exports.join_room = function (io) {
@@ -13,16 +14,29 @@ exports.join_room = function (io) {
 			if(err){return next(err);}
 			if(result.length===0)
 			{
-				return res.redirect('/');
+				//return res.redirect('/home');
+				res.json({
+					isValid: false,
+				});
 			}
 			else
 			{
 				//res.render('room',{roomId:req.params.roomId});
 				res.json({
-					roomId:req.params.roomId
+					roomId:req.params.roomId,
+					isValid: true,
 				});
 			}
 		});
+	}
+};
+
+exports.initializeRoom = function (io) {
+	const _io = io;
+
+	return function(req,res,next)
+	{
+
 	}
 };
 
@@ -44,6 +58,17 @@ exports.display_home = function(req,res,next){
 
 exports.create_room = function (io, isPublic) {
 	const _io = io;
+
+	function createTrack () {
+
+	  let stepArray = new Array(32).fill(false);
+
+	  return {
+	    stepArray,
+	    audioURL: "",
+	  };
+
+	};
 
 	return async function(req,res,next)
 	{
@@ -67,22 +92,32 @@ exports.create_room = function (io, isPublic) {
 			});
 		}
 
+		const roomData = new RoomData({
+			bpm:120,
+			tracks:[createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack()],
+		});
+
 		const room = new Room({
 						connections:[{userId: req.body.userId, socketId:req.body.socketId}],
 						roomId:generatedId,
-						isPublic:isPublic
+						isPublic:isPublic,
+						roomData:RoomData,
 						
 					}).save(err=>{
 						if(err){
 							return next(err);
 						} 
 
+						console.log("TESTED1");
+
 						Room.find({},'roomId').exec(function(err,result){
 							if(err){return next(err);}
-							_io.emit('room-created',generatedId);
+							//_io.emit('room-created',generatedId);
+							return res.json({
+								createdRoom: true
+							});
 						});
 			
-						return res.redirect("/"+generatedId);
 		});
 
 	}
