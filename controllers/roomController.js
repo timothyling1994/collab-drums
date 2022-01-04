@@ -71,13 +71,15 @@ exports.display_public_rooms = function(req,res,next){
 			bpm: 120,
 			tracks:[createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack()]
 						
-			}).save(function(err){
+			});
+
+	const roomDataId = roomData.url; 
+	console.log(roomDataId);
+	roomData.save(function(err){
 				if(err){
 					return next(err);
 				}
 			});
-	console.log("reached1");
-	console.log(roomData.url);
 }
 
 exports.display_home = function(req,res,next){
