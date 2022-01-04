@@ -31,24 +31,53 @@ exports.join_room = function (io) {
 	}
 };
 
-exports.initializeRoom = function (io) {
-	const _io = io;
+exports.initializeRoom = function(req,res,next){
 
-	return function(req,res,next)
-	{
+		console.log(req.params.roomId);
+		Room.find({roomId:req.params.roomId}).populate('RoomData').exec(function(err,roomData){
+			if(err){return next(err);}
 
-	}
+			console.log(roomData);
+			res.json({
+				room:roomData
+			});
+
+		});
+	
 };
 
 exports.display_public_rooms = function(req,res,next){
 
-	Room.find({'isPublic':true},'roomId').exec(function(err,list_rooms){
+	/*Room.find({'isPublic':true},'roomId').exec(function(err,list_rooms){
 		if(err){return next(err);}
 		res.json({
 			rooms:list_rooms
 		});
 		//res.render('public_rooms_list',{rooms:list_rooms});
-	});
+	});*/
+
+	function createTrack () {
+
+	  let stepArray = new Array(32).fill(false);
+
+	  return {
+	    stepArray,
+	    audioURL: "placeholder",
+	  };
+
+	};
+
+	const roomData = new RoomData({
+			bpm: 120,
+			tracks:[createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack()]
+						
+			}).save(function(err){
+				if(err){
+					return next(err);
+				}
+			});
+	console.log("reached1");
+	console.log(roomData.url);
 }
 
 exports.display_home = function(req,res,next){
@@ -65,7 +94,7 @@ exports.create_room = function (io, isPublic) {
 
 	  return {
 	    stepArray,
-	    audioURL: "",
+	    audioURL: "placeholder",
 	  };
 
 	};
@@ -92,16 +121,35 @@ exports.create_room = function (io, isPublic) {
 			});
 		}
 
+		console.log("reached");
 		const roomData = new RoomData({
-			bpm:120,
-			tracks:[createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack()],
-		});
+			bpm: 120,
+			tracks:[createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack()]
+						
+			}).save(err=>{
+				if(err){
+					return next(err);
+				}
+				console.log(roomData.url);
+			});
+		console.log("reached1");
 
-		const room = new Room({
+
+
+		/*
+		const roomData = new RoomData({
+			bpm: 120,
+			tracks: [createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack()],
+		}).save(function(err){
+			if(err){return next(err);}
+
+			console.log(roomData.url);
+
+			const room = new Room({
 						connections:[{userId: req.body.userId, socketId:req.body.socketId}],
 						roomId:generatedId,
 						isPublic:isPublic,
-						roomData:RoomData,
+						roomData: roomData.url,
 						
 					}).save(err=>{
 						if(err){
@@ -110,7 +158,7 @@ exports.create_room = function (io, isPublic) {
 
 						console.log("TESTED1");
 
-						Room.find({},'roomId').exec(function(err,result){
+						Room.find({roomId:generatedId}).exec(function(err,result){
 							if(err){return next(err);}
 							//_io.emit('room-created',generatedId);
 							return res.json({
@@ -118,8 +166,11 @@ exports.create_room = function (io, isPublic) {
 							});
 						});
 			
-		});
+			});
+		});*/
 
+		//console.log(roomData);
+		//console.log(roomData.url);
 	}
 };
 

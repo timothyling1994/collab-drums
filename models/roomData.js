@@ -4,13 +4,18 @@ var Schema = mongoose.Schema;
 
 var RoomDataSchema = new Schema({
 
-	bpm: {type:Number, required:true},
-	tracks:{type:[{stepArray:Array,audioURL:String}]},
+	bpm: {type:Number},
+	tracks:{type:[
+		{
+			stepArray:Array,
+			audioURL:String
+		}
+	]},
 
 });
 
 RoomDataSchema.virtual('url').get(function(){
-	return '/'+ this.roomId;
+	return this._id;
 });
 
 

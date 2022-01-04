@@ -10,7 +10,7 @@ var returnRoomRouter = function(io){
 
 	router.get('/display-public-rooms', roomController.display_public_rooms);
 
-	router.get('/initialize-room', roomController.initializeRoom);
+	router.get('/initialize-room/:roomId', roomController.initializeRoom);
 
 	router.get('/room/:roomId', roomController.join_room(io));
 
