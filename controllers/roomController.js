@@ -31,6 +31,36 @@ exports.join_room = function (io) {
 	}
 };
 
+exports.update_bpm_settings = function (io) {
+	const _io = io;
+
+	return function(req,res,next)
+	{
+
+		Room.find({roomId:req.body.roomId}).exec(function(err,result){
+			if(err){return next(err);}
+			if(result.length===0)
+			{
+				res.json({
+					isValid: false,
+				});
+			}
+			else
+			{
+
+				RoomData.findByIdAndUpdate(result[0].roomData,{bpm:req.body.bpm},{},function(err,updatedRoomData){
+					if(err){return next(err);}
+
+					res.json({
+						updated:true
+					});
+				});
+				//get objectId of RoomData object
+			}
+		});
+	}
+};
+
 exports.update_room_settings = function (io) {
 	const _io = io;
 

@@ -10,6 +10,8 @@ var returnRoomRouter = function(io){
 
 	router.post('/update-room-settings', roomController.update_room_settings(io));
 
+	router.post('/update-bpm-settings', roomController.update_bpm_settings(io));
+
 	router.get('/display-public-rooms', roomController.display_public_rooms);
 
 	router.get('/initialize-room/:roomId', roomController.initializeRoom);
@@ -20,7 +22,5 @@ var returnRoomRouter = function(io){
 
 	return router; 
 }
-
-
 
 module.exports = returnRoomRouter; 
