@@ -31,10 +31,51 @@ exports.join_room = function (io) {
 	}
 };
 
+exports.update_room_settings = function (io) {
+	const _io = io;
+
+	return function(req,res,next)
+	{
+
+		Room.find({roomId:req.body.roomId}).exec(function(err,result){
+			if(err){return next(err);}
+			if(result.length===0)
+			{
+				res.json({
+					isValid: false,
+				});
+			}
+			else
+			{
+				console.log("result");
+				console.log(result[0].roomData);
+
+				let newRoomData = [];
+				req.body.gridArr.map((track,index) => {
+					let trackObj = {};
+					trackObj.stepArray = track;
+					trackObj.audioURL = req.body.audioSamples[index];
+					newRoomData.push(trackObj);
+				});
+
+
+				RoomData.findByIdAndUpdate(result[0].roomData,{tracks:newRoomData},{},function(err,updatedRoomData){
+					if(err){return next(err);}
+
+					res.json({
+						updated:true
+					});
+				});
+				//get objectId of RoomData object
+			}
+		});
+	}
+};
+
 exports.initializeRoom = function(req,res,next){
 
-		console.log(req.params.roomId);
-		Room.find({roomId:req.params.roomId}).populate('RoomData').exec(function(err,roomData){
+		console.log("init:"+req.params.roomId);
+		Room.find({roomId:req.params.roomId}).populate('roomData').exec(function(err,roomData){
 			if(err){return next(err);}
 
 			console.log(roomData);
@@ -48,38 +89,13 @@ exports.initializeRoom = function(req,res,next){
 
 exports.display_public_rooms = function(req,res,next){
 
-	/*Room.find({'isPublic':true},'roomId').exec(function(err,list_rooms){
+	Room.find({'isPublic':true},'roomId').exec(function(err,list_rooms){
 		if(err){return next(err);}
 		res.json({
 			rooms:list_rooms
 		});
 		//res.render('public_rooms_list',{rooms:list_rooms});
-	});*/
-
-	function createTrack () {
-
-	  let stepArray = new Array(32).fill(false);
-
-	  return {
-	    stepArray,
-	    audioURL: "placeholder",
-	  };
-
-	};
-
-	const roomData = new RoomData({
-			bpm: 120,
-			tracks:[createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack()]
-						
-			});
-
-	const roomDataId = roomData.url; 
-	console.log(roomDataId);
-	roomData.save(function(err){
-				if(err){
-					return next(err);
-				}
-			});
+	});
 }
 
 exports.display_home = function(req,res,next){
@@ -96,7 +112,7 @@ exports.create_room = function (io, isPublic) {
 
 	  return {
 	    stepArray,
-	    audioURL: "placeholder",
+	    audioURL: "",
 	  };
 
 	};
@@ -123,56 +139,44 @@ exports.create_room = function (io, isPublic) {
 			});
 		}
 
-		console.log("reached");
+
 		const roomData = new RoomData({
-			bpm: 120,
-			tracks:[createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack()]
-						
-			}).save(err=>{
-				if(err){
-					return next(err);
-				}
-				console.log(roomData.url);
-			});
-		console.log("reached1");
-
-
-
-		/*
-		const roomData = new RoomData({
-			bpm: 120,
-			tracks: [createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack()],
-		}).save(function(err){
-			if(err){return next(err);}
-
-			console.log(roomData.url);
-
-			const room = new Room({
-						connections:[{userId: req.body.userId, socketId:req.body.socketId}],
-						roomId:generatedId,
-						isPublic:isPublic,
-						roomData: roomData.url,
-						
-					}).save(err=>{
-						if(err){
-							return next(err);
-						} 
-
-						console.log("TESTED1");
-
-						Room.find({roomId:generatedId}).exec(function(err,result){
-							if(err){return next(err);}
-							//_io.emit('room-created',generatedId);
-							return res.json({
-								createdRoom: true
-							});
-						});
+				bpm: 120,
+				tracks:[createTrack(),createTrack(),createTrack(),createTrack(),createTrack(),createTrack()]			
 			
-			});
-		});*/
+		});
 
-		//console.log(roomData);
-		//console.log(roomData.url);
+		const roomDataId = roomData.url; 
+		
+		
+		roomData.save(function(err){
+					if(err){
+						return next(err);
+					}
+		});
+
+
+		const room = new Room({
+					connections:[{userId: req.body.userId, socketId:req.body.socketId}],
+					roomId:generatedId,
+					isPublic:isPublic,
+					roomData: roomDataId,
+					
+				}).save(err=>{
+					if(err){
+						return next(err);
+					} 
+
+					Room.find({roomId:generatedId}).exec(function(err,result){
+						if(err){return next(err);}
+						//_io.emit('room-created',generatedId);
+						return res.json({
+							createdRoom: true,
+							roomData: roomDataId
+						});
+					});
+		
+		});
 	}
 };
 

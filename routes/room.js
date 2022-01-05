@@ -8,6 +8,8 @@ var returnRoomRouter = function(io){
 
 	router.post('/create-private-room', roomController.create_room(io, false));
 
+	router.post('/update-room-settings', roomController.update_room_settings(io));
+
 	router.get('/display-public-rooms', roomController.display_public_rooms);
 
 	router.get('/initialize-room/:roomId', roomController.initializeRoom);
