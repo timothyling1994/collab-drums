@@ -4,6 +4,7 @@ const { fireBaseApp,fireBaseStorage }  = require('./firebase');
 //import express from 'express';
 //import createServer from './server';
 const express = require('express');
+
 const createServer = require('./server');
 //const userRouter = require('./routes/user');
 
@@ -14,15 +15,25 @@ const app = createServer();
 const httpServer = require("http").createServer(app);
 var io = require("socket.io")(httpServer,{
     cors: {
-        origin: "http://localhost:4200",
+        origin: "http://localhost:3000",
         methods: ["GET", "POST"]
     }
 });
+
+
 const roomRouter = require('./routes/room')(io);
 
 const storage = fireBaseStorage.getStorage(fireBaseApp);
 
 //app.use('/user', userRouter);
+
+app.use(function(req,res,next){
+	res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+	res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Accept,Origin');
+	next();
+});
+
 app.use('/', roomRouter);
 
 io.on("connection",(socket) => {
@@ -115,13 +126,14 @@ io.on("connection",(socket) => {
 	});*/
 
 	socket.on('send_audio',(data)=>{
-		console.log(data);
+		console.log("REACHED:"+data);
 
 		const metadata = {
 			instrumentNum: data.instrumentNum,
-			contentType: 'audio/mp3',
+			contentType: data.contentType,
+			filename:data.fileName
 		}
-		const storageRef = fireBaseStorage.ref(storage,data.roomName+"/"+data.instrumentNum);
+		const storageRef = fireBaseStorage.ref(storage,data.roomId+"/"+data.instrumentNum);
 
 		const uploadTask = fireBaseStorage.uploadBytesResumable(storageRef,data.file, metadata);
 
@@ -162,6 +174,9 @@ io.on("connection",(socket) => {
 		    fireBaseStorage.getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
 		      console.log('File available at', downloadURL);
 		      console.log(data.instrumentNum);
+
+
+
 		      io.to(data.roomName).emit('audio_url',data.fileName,downloadURL,data.instrumentNum);
 		      //socket.emit('upload-complete', data.fileName, downloadURL,data.instrumentNum);
 		    });

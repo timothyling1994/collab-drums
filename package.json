@@ -26,6 +26,7 @@
     "luxon": "^2.0.1",
     "mongodb-memory-server": "^7.2.1",
     "mongoose": "^5.13.2",
+    "multer": "^1.4.4",
     "nodemon": "^2.0.12",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",

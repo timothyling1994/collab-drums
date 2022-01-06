@@ -2,11 +2,18 @@ var express = require('express');
 var router = express.Router();
 let roomController = require('../controllers/roomController');
 
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+
 var returnRoomRouter = function(io){
+
+	
 	
 	router.post('/create-public-room', roomController.create_room(io, true));
 
 	router.post('/create-private-room', roomController.create_room(io, false));
+
+	router.post('/update-audio-settings',upload.single('audio'),roomController.update_audio_settings(io));
 
 	router.post('/update-room-settings', roomController.update_room_settings(io));
 

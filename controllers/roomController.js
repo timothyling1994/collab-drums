@@ -31,6 +31,20 @@ exports.join_room = function (io) {
 	}
 };
 
+exports.update_audio_settings = function (io,upload) {
+	const _io = io;
+
+	return function(req,res,next)
+	{
+		console.log("here");
+		console.log(req.body);
+		console.log(req.audio);
+		res.json({
+			fetch:true
+		});
+	}
+};
+
 exports.update_bpm_settings = function (io) {
 	const _io = io;
 
@@ -107,8 +121,7 @@ exports.initializeRoom = function(req,res,next){
 		console.log("init:"+req.params.roomId);
 		Room.find({roomId:req.params.roomId}).populate('roomData').exec(function(err,roomData){
 			if(err){return next(err);}
-
-			console.log(roomData);
+			
 			res.json({
 				room:roomData
 			});
