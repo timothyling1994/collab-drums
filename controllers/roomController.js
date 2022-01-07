@@ -41,10 +41,9 @@ exports.update_audio_settings = function (io,upload) {
 
 	return async function(req,res,next)
 	{
+
 		console.log(req.body);
 		console.log(req.file);
-
-
 		let fileFormat = req.body.fileName.split(".")[1];
 
 		const metadata = {
@@ -57,28 +56,11 @@ exports.update_audio_settings = function (io,upload) {
 
 
 		try {
-		  const data = fs.readFileSync(req.file.path);
-		  console.log(data);
-			  fireBaseStorage.uploadBytes(storageRef, data).then((snapshot)=>{
-				console.log('uploaded file');
-			});
-		} catch (err) {
-		  console.error(err)
-		}
+		  const audioFile = fs.readFileSync(req.file.path);
+		  
+		  const uploadTask = fireBaseStorage.uploadBytesResumable(storageRef,audioFile, metadata);
 
-		
-		//const snapshot = await storageRef.put(req.file.buffer);
-
-		//const downloadURL = await snapshot.ref.getDownloadURL();
-		/*
-		const uploadTask = fireBaseStorage.uploadBytesResumable(storageRef,req.file, metadata);
-
-		
-		//console.log('uploadTask');
-		//console.log(uploadTask);
-
-
-		uploadTask.on('state_changed',
+		  uploadTask.on('state_changed',
 		  (snapshot) => {
 		    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
 		    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -116,17 +98,35 @@ exports.update_audio_settings = function (io,upload) {
 		      console.log('File available at', downloadURL);
 		      console.log(req.body.instrumentNum);
 
+		      let roomId = req.body.roomId;
 
+		      Room.find({roomId:roomId}).exec(function(err,result){
+		      	if(err){return next(err);}
+
+		      	let newObject = {};
+		      	newObject['tracks.'+ parseInt(req.body.instrumentNum)+".audioURL"] = downloadURL;
+
+		      	RoomData.findByIdAndUpdate(result[0].roomData,{$set: newObject},{useFindAndModify: false},function(err,updatedRoomData){
+					if(err){return next(err);}
+
+					res.json({
+						updated:true
+					});
+				});
+
+		      });
 
 		      //io.to(data.roomName).emit('audio_url',data.fileName,downloadURL,data.instrumentNum);
 		      //socket.emit('upload-complete', data.fileName, downloadURL,data.instrumentNum);
 		    });
 		  }
-		);*/
+		);
+		
 
-		res.json({
-			fetched:true
-		});
+		} catch (err) {
+		  console.error(err)
+		}
+
 	}
 };
 
