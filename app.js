@@ -1,5 +1,5 @@
 //import fireBaseApp from "./firebase.js";
-const { fireBaseApp,fireBaseStorage }  = require('./firebase');
+//const { fireBaseApp,fireBaseStorage }  = require('./firebase');
 
 //import express from 'express';
 //import createServer from './server';
@@ -23,9 +23,11 @@ var io = require("socket.io")(httpServer,{
 
 const roomRouter = require('./routes/room')(io);
 
-const storage = fireBaseStorage.getStorage(fireBaseApp);
+//const storage = fireBaseStorage.getStorage(fireBaseApp);
 
 //app.use('/user', userRouter);
+
+app.use(express.static(__dirname));
 
 app.use(function(req,res,next){
 	res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -57,6 +59,7 @@ io.on("connection",(socket) => {
 
 	let send_room_settings = async (socketId, roomName) => {
 
+		/*
 		let newTrackData = {
 			current_step: 1,
 			bpm: 120,
@@ -97,7 +100,8 @@ io.on("connection",(socket) => {
 		});
 
 		io.to(socketId).emit('set-room-settings',newTrackData);
-	};
+		*/
+	}; 
 
 	/*socket.on('sending-room-settings', async (trackData, socketId, roomName) => {
 		//get downloadURLs of existing audio files from firestore
@@ -126,6 +130,8 @@ io.on("connection",(socket) => {
 	});*/
 
 	socket.on('send_audio',(data)=>{
+
+		/*
 		console.log("REACHED:"+data);
 
 		const metadata = {
@@ -181,7 +187,7 @@ io.on("connection",(socket) => {
 		      //socket.emit('upload-complete', data.fileName, downloadURL,data.instrumentNum);
 		    });
 		  }
-		);
+		);*/
 
 	});
 

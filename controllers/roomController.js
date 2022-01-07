@@ -1,7 +1,12 @@
 var uniqid = require('uniqid');
+const fs = require('fs')
+
 const { body,validationResult } = require('express-validator');
 var Room = require('../models/room');
 var RoomData = require('../models/roomData');
+
+const { fireBaseApp,fireBaseStorage }  = require('../firebase');
+const storage = fireBaseStorage.getStorage(fireBaseApp);
 
 
 exports.join_room = function (io) {
@@ -34,13 +39,93 @@ exports.join_room = function (io) {
 exports.update_audio_settings = function (io,upload) {
 	const _io = io;
 
-	return function(req,res,next)
+	return async function(req,res,next)
 	{
-		console.log("here");
 		console.log(req.body);
-		console.log(req.audio);
+		console.log(req.file);
+
+
+		let fileFormat = req.body.fileName.split(".")[1];
+
+		const metadata = {
+			instrumentNum: req.body.instrumentNum,
+			contentType: req.body.contentType,
+			filename:req.body.fileName+"."+fileFormat
+		};
+
+		const storageRef = fireBaseStorage.ref(storage,req.body.roomId+"/"+req.body.instrumentNum);
+
+
+		try {
+		  const data = fs.readFileSync(req.file.path);
+		  console.log(data);
+			  fireBaseStorage.uploadBytes(storageRef, data).then((snapshot)=>{
+				console.log('uploaded file');
+			});
+		} catch (err) {
+		  console.error(err)
+		}
+
+		
+		//const snapshot = await storageRef.put(req.file.buffer);
+
+		//const downloadURL = await snapshot.ref.getDownloadURL();
+		/*
+		const uploadTask = fireBaseStorage.uploadBytesResumable(storageRef,req.file, metadata);
+
+		
+		//console.log('uploadTask');
+		//console.log(uploadTask);
+
+
+		uploadTask.on('state_changed',
+		  (snapshot) => {
+		    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+		    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+		    console.log('Upload is ' + progress + '% done');
+		    switch (snapshot.state) {
+		      case 'paused':
+		        console.log('Upload is paused');
+		        break;
+		      case 'running':
+		        console.log('Upload is running');
+		        break;
+		    }
+		  }, 
+		  (error) => {
+		    // A full list of error codes is available at
+		    // https://firebase.google.com/docs/storage/web/handle-errors
+		    switch (error.code) {
+		      case 'storage/unauthorized':
+		        // User doesn't have permission to access the object
+		        break;
+		      case 'storage/canceled':
+		        // User canceled the upload
+		        break;
+
+		      // ...
+
+		      case 'storage/unknown':
+		        // Unknown error occurred, inspect error.serverResponse
+		        break;
+		    }
+		  }, 
+		  () => {
+		    // Upload completed successfully, now we can get the download URL
+		    fireBaseStorage.getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+		      console.log('File available at', downloadURL);
+		      console.log(req.body.instrumentNum);
+
+
+
+		      //io.to(data.roomName).emit('audio_url',data.fileName,downloadURL,data.instrumentNum);
+		      //socket.emit('upload-complete', data.fileName, downloadURL,data.instrumentNum);
+		    });
+		  }
+		);*/
+
 		res.json({
-			fetch:true
+			fetched:true
 		});
 	}
 };
@@ -91,8 +176,6 @@ exports.update_room_settings = function (io) {
 			}
 			else
 			{
-				console.log("result");
-				console.log(result[0].roomData);
 
 				let newRoomData = [];
 				req.body.gridArr.map((track,index) => {
@@ -110,7 +193,6 @@ exports.update_room_settings = function (io) {
 						updated:true
 					});
 				});
-				//get objectId of RoomData object
 			}
 		});
 	}
@@ -121,7 +203,7 @@ exports.initializeRoom = function(req,res,next){
 		console.log("init:"+req.params.roomId);
 		Room.find({roomId:req.params.roomId}).populate('roomData').exec(function(err,roomData){
 			if(err){return next(err);}
-			
+
 			res.json({
 				room:roomData
 			});
