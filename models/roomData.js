@@ -8,7 +8,8 @@ var RoomDataSchema = new Schema({
 	tracks:{type:[
 		{
 			stepArray:Array,
-			audioURL:String
+			audioURL:String,
+			audioName:String,
 		}
 	]},
 

@@ -18,8 +18,6 @@ const upload = multer({storage:fileStorageEngine});
 
 var returnRoomRouter = function(io){
 	
-	console.log(path.join(__dirname, '../uploads/'));
-	
 	router.post('/create-public-room', roomController.create_room(io, true));
 
 	router.post('/create-private-room', roomController.create_room(io, false));

@@ -98,6 +98,10 @@ exports.update_audio_settings = function (io,upload) {
 		      console.log('File available at', downloadURL);
 		      console.log(req.body.instrumentNum);
 
+		      fs.unlink(req.file.path,function(){
+		      	console.log("deleting audio file from temp storage");
+		      });
+
 		      let roomId = req.body.roomId;
 
 		      Room.find({roomId:roomId}).exec(function(err,result){
@@ -105,6 +109,7 @@ exports.update_audio_settings = function (io,upload) {
 
 		      	let newObject = {};
 		      	newObject['tracks.'+ parseInt(req.body.instrumentNum)+".audioURL"] = downloadURL;
+		      	newObject['tracks.'+ parseInt(req.body.instrumentNum)+".audioName"] = metadata.filename;
 
 		      	RoomData.findByIdAndUpdate(result[0].roomData,{$set: newObject},{useFindAndModify: false},function(err,updatedRoomData){
 					if(err){return next(err);}
@@ -165,7 +170,6 @@ exports.update_room_settings = function (io) {
 
 	return function(req,res,next)
 	{
-
 		Room.find({roomId:req.body.roomId}).exec(function(err,result){
 			if(err){return next(err);}
 			if(result.length===0)
@@ -176,17 +180,11 @@ exports.update_room_settings = function (io) {
 			}
 			else
 			{
-
-				let newRoomData = [];
-				req.body.gridArr.map((track,index) => {
-					let trackObj = {};
-					trackObj.stepArray = track;
-					trackObj.audioURL = req.body.audioSamples[index];
-					newRoomData.push(trackObj);
-				});
-
-
-				RoomData.findByIdAndUpdate(result[0].roomData,{tracks:newRoomData},{},function(err,updatedRoomData){
+				let newObject = {};
+				newObject['tracks.'+ parseInt(req.body.trackNum)+".stepArray"] = req.body.gridArr[req.body.trackNum];
+				console.log(newObject);
+				RoomData.findByIdAndUpdate(result[0].roomData,{$set:newObject},{useFindAndModify: false},function(err,updatedRoomData){
+				//RoomData.findByIdAndUpdate(result[0].roomData,{tracks:newRoomData},{},function(err,updatedRoomData){
 					if(err){return next(err);}
 
 					res.json({
@@ -205,7 +203,7 @@ exports.initializeRoom = function(req,res,next){
 			if(err){return next(err);}
 
 			res.json({
-				room:roomData
+				roomData:roomData
 			});
 
 		});
@@ -237,7 +235,8 @@ exports.create_room = function (io, isPublic) {
 
 	  return {
 	    stepArray,
-	    audioURL: "",
+	    audioURL: null,
+	    audioName:null,
 	  };
 
 	};
@@ -297,7 +296,7 @@ exports.create_room = function (io, isPublic) {
 						//_io.emit('room-created',generatedId);
 						return res.json({
 							createdRoom: true,
-							roomData: roomDataId
+							roomId:generatedId,
 						});
 					});
 		
