@@ -194,5 +194,5 @@ io.on("connection",(socket) => {
 	});
 });	
 
-httpServer.listen(8080,() => console.log('app listening on port 8080'));
+httpServer.listen(process.env.PORT || 8080,() => console.log('app listening on port 8080'));
 
