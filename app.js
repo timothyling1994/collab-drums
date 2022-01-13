@@ -36,9 +36,10 @@ app.use(function(req,res,next){
 	next();
 });
 
-app.get('/',funciton(req,res){
+app.get('/',function(req,res){
 	res.send('hello world');
 });
+
 app.use('/', roomRouter);
 
 io.on("connection",(socket) => {
