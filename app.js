@@ -30,7 +30,7 @@ const roomRouter = require('./routes/room')(io);
 app.use(express.static(__dirname));
 
 app.use(function(req,res,next){
-	res.setHeader('Access-Control-Allow-Origin', 'https://collab-drums.netlify.app/');
+	res.setHeader('Access-Control-Allow-Origin', 'https://collab-drums.netlify.app');
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Accept,Origin');
 	next();
