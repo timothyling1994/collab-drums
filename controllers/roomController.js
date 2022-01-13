@@ -115,7 +115,10 @@ exports.update_audio_settings = function (io,upload) {
 					if(err){return next(err);}
 
 					res.json({
-						updated:true
+						updated:true,
+						downloadURL:downloadURL,
+						instrumentNum: req.body.instrumentNum,
+
 					});
 				});
 
@@ -155,6 +158,8 @@ exports.update_bpm_settings = function (io) {
 				RoomData.findByIdAndUpdate(result[0].roomData,{bpm:req.body.bpm},{},function(err,updatedRoomData){
 					if(err){return next(err);}
 
+					_io.emit('bpm-updated',req.body.bpm);
+
 					res.json({
 						updated:true
 					});
@@ -184,7 +189,6 @@ exports.update_room_settings = function (io) {
 				newObject['tracks.'+ parseInt(req.body.trackNum)+".stepArray"] = req.body.gridArr[req.body.trackNum];
 				console.log(newObject);
 				RoomData.findByIdAndUpdate(result[0].roomData,{$set:newObject},{useFindAndModify: false},function(err,updatedRoomData){
-				//RoomData.findByIdAndUpdate(result[0].roomData,{tracks:newRoomData},{},function(err,updatedRoomData){
 					if(err){return next(err);}
 
 					res.json({
@@ -217,7 +221,6 @@ exports.display_public_rooms = function(req,res,next){
 		res.json({
 			rooms:list_rooms
 		});
-		//res.render('public_rooms_list',{rooms:list_rooms});
 	});
 }
 
@@ -304,41 +307,3 @@ exports.create_room = function (io, isPublic) {
 	}
 };
 
-/*
-exports.create_room = async function (req,res,next) {
-	
-	let isUnique = false;
-
-	let generatedId="";
-
-	while(!isUnique)
-	{
-		generatedId = uniqid().toLowerCase();
-
-		await new Promise((resolve,reject)=>{
-			Room.find({roomId:generatedId}).exec(function(err,result){
-				if(err){return next(err);}
-				if(result.length === 0)
-				{
-					isUnique = true;
-					resolve(true);
-				}
-			});
-		});
-	}
-
-	const room = new Room({
-					connections:[{userId: req.body.userId, socketId:req.body.socketId}],
-					roomId:generatedId
-					
-				}).save(err=>{
-					if(err){
-						return next(err);
-					} 
-
-					return res.redirect("/"+generatedId);
-				});
-
-
-
-};*/

@@ -40,7 +40,7 @@ app.use('/', roomRouter);
 
 io.on("connection",(socket) => {
 	
-	socket.on('joining-room',async (roomName,name) => {
+	socket.on('joining-room',async (roomName) => {
 
 		/*const socketsInRoom = await io.in(roomName).fetchSockets();
 
@@ -49,12 +49,10 @@ io.on("connection",(socket) => {
 		{
 			io.to(socketsInRoom[0].id).emit('get-room-settings',socket.id, roomName);
 		}*/
-
+		console.log(roomName);
 		socket.join(roomName);
-		send_room_settings(socket.id,roomName);
-
-		console.log(name+" joining:"+roomName);
-		socket.to(roomName).emit('user-connected',name);
+		console.log("joining:"+roomName);
+		socket.to(roomName).emit('user-connected');
 	});
 
 	let send_room_settings = async (socketId, roomName) => {
