@@ -15,7 +15,8 @@ const app = createServer();
 const httpServer = require("http").createServer(app);
 var io = require("socket.io")(httpServer,{
     cors: {
-        origin: "https://collab-drums.netlify.app/",
+        //origin: "https://collab-drums.netlify.app/",
+        origin: "http://localhost:3000",
         methods: ["GET", "POST"]
     }
 });
@@ -30,7 +31,8 @@ const roomRouter = require('./routes/room')(io);
 app.use(express.static(__dirname));
 
 app.use(function(req,res,next){
-	res.setHeader('Access-Control-Allow-Origin', 'https://collab-drums.netlify.app');
+	//res.setHeader('Access-Control-Allow-Origin', 'https://collab-drums.netlify.app');
+	res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Accept,Origin');
 	next();
@@ -44,6 +46,7 @@ app.use('/', roomRouter);
 
 io.on("connection",(socket) => {
 	
+	console.log("new client connected?");
 	socket.on('joining-room',async (roomName) => {
 
 		/*const socketsInRoom = await io.in(roomName).fetchSockets();
