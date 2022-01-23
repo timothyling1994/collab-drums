@@ -114,6 +114,9 @@ exports.update_audio_settings = function (io,upload) {
 		      	RoomData.findByIdAndUpdate(result[0].roomData,{$set: newObject},{useFindAndModify: false},function(err,updatedRoomData){
 					if(err){return next(err);}
 
+					_io.to(req.body.roomId).emit('audio-settings-updated',downloadURL,req.body.instrumentNum);
+					_io.to(req.body.roomId).emit('audio-sample-name-updated',metadata.filename,req.body.instrumentNum);
+
 					res.json({
 						updated:true,
 						downloadURL:downloadURL,
@@ -158,7 +161,7 @@ exports.update_bpm_settings = function (io) {
 				RoomData.findByIdAndUpdate(result[0].roomData,{bpm:req.body.bpm},{},function(err,updatedRoomData){
 					if(err){return next(err);}
 
-					_io.emit('bpm-updated',req.body.bpm);
+					_io.to(req.body.roomId).emit('bpm-updated',req.body.bpm);
 
 					res.json({
 						updated:true
@@ -190,6 +193,8 @@ exports.update_room_settings = function (io) {
 				console.log(newObject);
 				RoomData.findByIdAndUpdate(result[0].roomData,{$set:newObject},{useFindAndModify: false},function(err,updatedRoomData){
 					if(err){return next(err);}
+
+					_io.to(req.body.roomId).emit('room-settings-updated', req.body.gridArr[req.body.trackNum], req.body.trackNum);
 
 					res.json({
 						updated:true
